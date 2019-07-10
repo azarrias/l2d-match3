@@ -1,7 +1,8 @@
 require 'globals'
 push = require 'lib.push'
 
-local backgroundWidth, backgroundHeight
+local backgroundWidth
+local backgroundX, backgroundScrollSpeed
 
 function love.load(arg)
   if arg[#arg] == "-debug" then require("mobdebug").start() end
@@ -17,7 +18,9 @@ function love.load(arg)
     resizable = not MOBILE_OS
   })
   
-  backgroundWidth, backgroundHeight = TEXTURES.background:getDimensions()
+  backgroundWidth = TEXTURES.background:getDimensions()
+  backgroundX = 0
+  backgroundScrollSpeed = 80
 
   love.keyboard.keysPressed = {}
 end
@@ -27,8 +30,18 @@ function love.resize(w, h)
 end
 
 function love.update(dt)
+  -- handle input
   if love.keyboard.keysPressed.escape then
     love.event.quit()
+  end
+  
+  -- scroll background to the left by decreasing its X position
+  backgroundX = backgroundX - backgroundScrollSpeed * dt
+  -- the background does not tile perfectly
+  -- 51 is the width of the pattern
+  -- 4 is the horizontal offset to the left in order to align it
+  if backgroundX <= -backgroundWidth + VIRTUAL_WIDTH + 51 - 4 then
+    backgroundX = 0
   end
   
   love.keyboard.keysPressed = {}
@@ -43,11 +56,10 @@ end
 function love.draw()
   push:apply('start')
   
+  -- draw background at X, 0 without scaling or rotating
   love.graphics.draw(TEXTURES.background,
-    0, 0, -- draw at 0, 0
-    0,    -- no rotation
-    VIRTUAL_WIDTH / (backgroundWidth - 1), VIRTUAL_HEIGHT / (backgroundHeight - 1))
-    
+    backgroundX, 0)
+  
   push:apply('end')
 end
   
