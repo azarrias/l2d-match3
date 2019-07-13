@@ -1,3 +1,5 @@
+require 'Util'
+
 MOBILE_OS = love.system.getOS() == 'Android' or love.system.getOS() == 'OS X'
 GAME_TITLE = 'Match 3'
 WINDOW_WIDTH, WINDOW_HEIGHT = 1280, 720
@@ -18,5 +20,12 @@ COLORS = {
 }
 
 TEXTURES = {
-  background = love.graphics.newImage('graphics/background.png')
+  background = love.graphics.newImage('graphics/background.png'),
+  main = love.graphics.newImage('graphics/match3.png')
+}
+
+FRAMES = {
+    -- divided into sets for each tile type in this game, instead of one large
+    -- table of Quads
+    tiles = GenerateTileQuads(TEXTURES.main)
 }

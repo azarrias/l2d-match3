@@ -1,5 +1,10 @@
 require 'globals'
 push = require 'lib.push'
+Class = require 'lib.class'
+
+require 'StateMachine'
+require 'BaseState'
+require 'StartState'
 
 local backgroundWidth
 local backgroundX, backgroundScrollSpeed
@@ -21,8 +26,22 @@ function love.load(arg)
   backgroundWidth = TEXTURES.background:getDimensions()
   backgroundX = 0
   backgroundScrollSpeed = 80
+  
+  gStateMachine = StateMachine {
+    start = function() return StartState() end
+  }
+  gStateMachine:change('start')
 
   love.keyboard.keysPressed = {}
+  
+  -- Adapt colors to new range in V11 for compatibility
+  if V11 then
+    for k, v in pairs(COLORS) do
+      for key, value in pairs(v) do
+        COLORS[k][key] = value / 255
+      end
+    end
+  end
 end
 
 function love.resize(w, h)
@@ -30,11 +49,6 @@ function love.resize(w, h)
 end
 
 function love.update(dt)
-  -- handle input
-  if love.keyboard.keysPressed.escape then
-    love.event.quit()
-  end
-  
   -- scroll background to the left by decreasing its X position
   backgroundX = backgroundX - backgroundScrollSpeed * dt
   -- the background does not tile perfectly
@@ -43,6 +57,8 @@ function love.update(dt)
   if backgroundX <= -backgroundWidth + VIRTUAL_WIDTH + 51 - 4 then
     backgroundX = 0
   end
+  
+  gStateMachine:update(dt)
   
   love.keyboard.keysPressed = {}
 end
@@ -60,6 +76,7 @@ function love.draw()
   love.graphics.draw(TEXTURES.background,
     backgroundX, 0)
   
+  gStateMachine:render()
   push:apply('end')
 end
   
