@@ -31,6 +31,11 @@ function StartState:render()
       love.graphics.setColor(COLORS.black)
       love.graphics.draw(TEXTURES.main, positions[(y - 1) * x + x],
         (x - 1) * tileSide + marginX + shadowSize, (y - 1) * tileSide + marginY + shadowSize)
+
+      -- render tiles
+      love.graphics.setColor(COLORS.white)
+      love.graphics.draw(TEXTURES.main, positions[(y - 1) * x + x],
+        (x - 1) * tileSide + marginX, (y - 1) * tileSide + marginY)
     end
   end
 end
