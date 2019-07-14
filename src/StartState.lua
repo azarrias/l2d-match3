@@ -6,6 +6,9 @@ local tileColors = 18
 local tileVariants = 6
 local tileSide = 32
 local shadowSize = 3
+-- calculate margin for the board to be centered on screen
+local marginX = (VIRTUAL_WIDTH - tileSide * cols) / 2
+local marginY = (VIRTUAL_HEIGHT - tileSide * rows) / 2
 
 function StartState:init()
   -- generate full table of tiles just for display
@@ -22,9 +25,6 @@ function StartState:update(dt)
 end
 
 function StartState:render()
-  -- calculate margin for the board to be centered on screen
-  local marginX = (VIRTUAL_WIDTH - tileSide * cols) / 2
-  local marginY = (VIRTUAL_HEIGHT - tileSide * rows) / 2
   for y = 1, rows do
     for x = 1, cols do
       -- draw shadow
@@ -38,4 +38,8 @@ function StartState:render()
         (x - 1) * tileSide + marginX, (y - 1) * tileSide + marginY)
     end
   end
+  
+  -- apply a dark tint to the whole menu screen
+  love.graphics.setColor(COLORS.black_semitransparent)
+  love.graphics.rectangle('fill', 0, 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT)
 end

@@ -15,6 +15,7 @@ COLORS = {
   yellow = { 255, 255, 0 },
   white = { 255, 255, 255 },
   black = { 0, 0, 0 },
+  black_semitransparent = { 0, 0, 0, 128 },
   purple = { 215, 123, 186 },
   gold = { 251, 242, 54 }
 }
