@@ -1,6 +1,7 @@
 require 'globals'
 push = require 'lib.push'
 Class = require 'lib.class'
+Timer = require 'lib.knife.timer'
 
 require 'StateMachine'
 require 'BaseState'

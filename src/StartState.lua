@@ -23,8 +23,15 @@ function StartState:init()
     [3] = COLORS.gold,
     [4] = COLORS.purple,
     [5] = COLORS.green_light,
-    [7] = COLORS.red_light
+    [6] = COLORS.red_light
   }
+  
+  self.colorTimer = Timer.every(0.075,  -- interval timer (in seconds)
+    function()                          -- callback function to execute once every interval
+      e = table.remove(self.colors, 1)
+      table.insert(self.colors, e)
+    end
+  )    
 end  
 
 function StartState:update(dt)
@@ -32,6 +39,9 @@ function StartState:update(dt)
   if love.keyboard.keysPressed.escape then
     love.event.quit()
   end
+  
+  -- Update all timers in the default group
+  Timer.update(dt)
 end
 
 function StartState:render()
@@ -64,15 +74,19 @@ function StartState:drawMatch3Text()
   
   love.graphics.setFont(FONTS.large)
   self:drawTextShadow('MATCH 3', VIRTUAL_HEIGHT / 2 - 60)
+  idx = 1
+  
   for i = 1, titleText:len() do
-    if i ~= 6 then
-      love.graphics.setColor(self.colors[i])
+    -- if we have a space, we can skip it
+    if titleText:sub(i, i) ~= " " then 
+      love.graphics.setColor(self.colors[idx])
       leftText = titleText:sub(1, i - 1)
       rightText = titleText:sub(i + 1)
       leftOffset = FONTS.large:getWidth(leftText)
       rightOffset = FONTS.large:getWidth(rightText)
       love.graphics.printf(titleText:sub(i, i), 0, VIRTUAL_HEIGHT / 2 - 60,
         VIRTUAL_WIDTH + leftOffset - rightOffset, 'center')
+      idx = idx + 1
     end
   end
 end
