@@ -12,6 +12,7 @@ COLORS = {
   black = { 0, 0, 0 },
   black_semitransparent = { 0, 0, 0, 128 },
   blue = { 99, 155, 255 },
+  blue_dark = { 48, 96, 130 },
   gold = { 251, 242, 54 },
   green = { 106, 190, 47 },
   green_light = { 153, 229, 80 },

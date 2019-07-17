@@ -9,8 +9,11 @@ local shadowSize = 3
 -- calculate margin for the board to be centered on screen
 local marginX = (VIRTUAL_WIDTH - tileSide * cols) / 2
 local marginY = (VIRTUAL_HEIGHT - tileSide * rows) / 2
+local menuOptions = { "Start", "Quit Game" }
 
 function StartState:init()
+  self.currentMenuItem = 1
+  
   -- generate full table of tiles just for display
   for i = 1, cols * rows do
     table.insert(positions, FRAMES.tiles[math.random(tileColors)][math.random(tileVariants)])
@@ -64,6 +67,7 @@ function StartState:render()
   love.graphics.rectangle('fill', 0, 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT)
   
   self:drawMatch3Text()
+  self:drawOptions()
 end
 
 function StartState:drawMatch3Text()
@@ -90,6 +94,33 @@ function StartState:drawMatch3Text()
     end
   end
 end
+
+function StartState:drawOptions()
+  love.graphics.setColor(COLORS.white_semitransparent)
+  love.graphics.rectangle('fill', VIRTUAL_WIDTH / 2 - 76, VIRTUAL_HEIGHT / 2 + 12, 150, 58, 6)
+  
+  love.graphics.setFont(FONTS.medium)
+  self:drawTextShadow(menuOptions[1], VIRTUAL_HEIGHT / 2 + 12 + 8)
+  
+  if self.currentMenuItem == 1 then
+    love.graphics.setColor(COLORS.blue)
+  else
+    love.graphics.setColor(COLORS.blue_dark)
+  end
+  
+  love.graphics.printf(menuOptions[1], 0, VIRTUAL_HEIGHT / 2 + 12 + 8, VIRTUAL_WIDTH, 'center')
+  
+  self:drawTextShadow(menuOptions[2], VIRTUAL_HEIGHT / 2 + 12 + 33)
+  
+  if self.currentMenuItem == 2 then
+    love.graphics.setColor(COLORS.blue)
+  else
+    love.graphics.setColor(COLORS.blue_dark)
+  end
+  
+  love.graphics.printf(menuOptions[2], 0, VIRTUAL_HEIGHT / 2 + 12 + 33, VIRTUAL_WIDTH, 'center')
+end
+  
 
 function StartState:drawTextShadow(text, y)
     love.graphics.setColor(COLORS.shadow)
