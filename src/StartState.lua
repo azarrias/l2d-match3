@@ -43,6 +43,11 @@ function StartState:update(dt)
     love.event.quit()
   end
   
+  if love.keyboard.keysPressed.up or love.keyboard.keysPressed.down then
+    self.currentMenuItem = self.currentMenuItem == 1 and 2 or 1
+    SOUNDS.select:play()
+  end
+  
   -- Update all timers in the default group
   Timer.update(dt)
 end

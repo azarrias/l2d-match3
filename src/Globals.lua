@@ -44,3 +44,7 @@ FONTS = {
   medium = love.graphics.newFont('fonts/font.ttf', 16),
   large = love.graphics.newFont('fonts/font.ttf', 32)
 }
+
+SOUNDS = {
+  select = love.audio.newSource('sounds/select.wav', 'static')
+}
