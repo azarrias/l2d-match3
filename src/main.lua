@@ -6,6 +6,10 @@ Timer = require 'lib.knife.timer'
 require 'StateMachine'
 require 'BaseState'
 require 'StartState'
+require 'BeginGameState'
+
+require 'Board'
+require 'Tile'
 
 local backgroundWidth
 local backgroundX, backgroundScrollSpeed
@@ -29,7 +33,8 @@ function love.load(arg)
   backgroundScrollSpeed = 80
   
   gStateMachine = StateMachine {
-    start = function() return StartState() end
+    start = function() return StartState() end,
+    ['begin-game'] = function() return BeginGameState() end
   }
   gStateMachine:change('start')
 

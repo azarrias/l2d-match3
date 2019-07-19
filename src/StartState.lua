@@ -34,7 +34,7 @@ function StartState:init()
       e = table.remove(self.colors, 1)
       table.insert(self.colors, e)
     end
-  )    
+  )
 end  
 
 function StartState:update(dt)
@@ -46,6 +46,14 @@ function StartState:update(dt)
   if love.keyboard.keysPressed.up or love.keyboard.keysPressed.down then
     self.currentMenuItem = self.currentMenuItem == 1 and 2 or 1
     SOUNDS.select:play()
+  end
+  
+  if love.keyboard.keysPressed.enter or love.keyboard.keysPressed['return'] then
+    if self.currentMenuItem == 1 then
+      gStateMachine:change('begin-game')
+    else
+      love.event.quit()
+    end
   end
   
   -- Update all timers in the default group
