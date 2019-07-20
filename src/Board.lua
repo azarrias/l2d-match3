@@ -16,7 +16,7 @@ function Board:initializeTiles()
     
     for tileX = 1, boardCols do
       -- new tile
-      table.insert(self.tiles[tileY], Tile(tileX, tileY))
+      table.insert(self.tiles[tileY], Tile(tileX, tileY, math.random(18), math.random(6)))
     end
   end
 end
