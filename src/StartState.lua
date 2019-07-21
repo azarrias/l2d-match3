@@ -50,7 +50,9 @@ function StartState:update(dt)
   
   if love.keyboard.keysPressed.enter or love.keyboard.keysPressed['return'] then
     if self.currentMenuItem == 1 then
-      gStateMachine:change('begin-game')
+      gStateMachine:change('begin-game', {
+        level = 1
+      })
     else
       love.event.quit()
     end
