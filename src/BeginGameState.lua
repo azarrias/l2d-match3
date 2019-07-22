@@ -31,6 +31,13 @@ function BeginGameState:enter(param)
         Timer.tween(0.25, {
           [self] = { levelLabelY = VIRTUAL_HEIGHT + 30 }
         })
+        -- after the tween animation, transition to the play state
+        :finish(function()
+          gStateMachine:change('play', {
+            level = self.level,
+            board = self.board
+          })
+        end)
       end)
     end)
   end)

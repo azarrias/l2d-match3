@@ -7,6 +7,7 @@ require 'StateMachine'
 require 'BaseState'
 require 'StartState'
 require 'BeginGameState'
+require 'PlayState'
 
 require 'Board'
 require 'Tile'
@@ -34,7 +35,8 @@ function love.load(arg)
   
   gStateMachine = StateMachine {
     start = function() return StartState() end,
-    ['begin-game'] = function() return BeginGameState() end
+    ['begin-game'] = function() return BeginGameState() end,
+    play = function() return PlayState() end
   }
   gStateMachine:change('start')
 
