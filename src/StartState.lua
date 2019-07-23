@@ -26,7 +26,7 @@ function StartState:init()
     [3] = COLORS.gold,
     [4] = COLORS.purple,
     [5] = COLORS.green_light,
-    [6] = COLORS.red_light
+    [6] = COLORS.orange
   }
   
   self.colorTimer = Timer.every(0.075,  -- interval timer (in seconds)

@@ -18,15 +18,17 @@ COLORS = {
   green = { 106, 190, 47 },
   green_light = { 153, 229, 80 },
   mulberry = { 217, 87, 99 },
+  orange = { 223, 113, 38 },
   pink = { 215, 123, 186 },
   purple = { 118, 66, 138 },
-  red = { 217, 87, 99 },
-  red_light = { 223, 113, 38 },
+  red = { 172, 50, 50 },
+  red_light = { 217, 87, 99 },
   shadow = { 34, 32, 52 },
   turquoise = { 95, 205, 228 },
   yellow = { 255, 255, 0 },
   white = { 255, 255, 255 },
-  white_semitransparent = { 255, 255, 255, 128 }
+  white_semitransparent = { 255, 255, 255, 128 },
+  white_quite_transparent = { 255, 255, 255, 96 }
 }
 
 TEXTURES = {
