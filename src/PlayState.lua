@@ -39,13 +39,55 @@ function PlayState:update(dt)
   elseif love.keyboard.keysPressed.right then
     self.boardHighlightX = math.min(7, self.boardHighlightX + 1)
   end
+  
+  if love.keyboard.keysPressed.enter or love.keyboard.keysPressed['return'] then
+    local x, y = self.boardHighlightX + 1, self.boardHighlightY + 1
     
+    -- if nothing is highlighted, highlight current tile
+    if not self.highlightedTile then
+      self.highlightedTile = self.board.tiles[y][x]
+    -- if the tile is already highlighted, deselect
+    elseif self.highlightedTile == self.board.tiles[y][x] then
+      self.highlightedTile = nil
+    -- if the tile is not adjacent, remove highlight
+    elseif math.abs(self.highlightedTile.gridX - x) + math.abs(self.highlightedTile.gridY - y) > 1 then
+      self.highlightedTile = nil
+    -- otherwise all is good, swap the tiles
+    else
+      local tempX, tempY = self.highlightedTile.gridX, self.highlightedTile.gridY
+      local newTile = self.board.tiles[y][x]
+      
+      self.highlightedTile.gridX, self.highlightedTile.gridY = newTile.gridX, newTile.gridY
+      newTile.gridX, newTile.gridY = tempX, tempY
+      
+      self.board.tiles[self.highlightedTile.gridY][self.highlightedTile.gridX] =
+        self.highlightedTile
+      self.board.tiles[newTile.gridY][newTile.gridX] = newTile
+      
+      -- swap tween animation
+      Timer.tween(0.1, {
+        [self.highlightedTile] = { x = newTile.x, y = newTile.y },
+        [newTile] =  { x = self.highlightedTile.x, y = self.highlightedTile.y }
+      })
+    end
+  end  
   Timer.update(dt)
 end
 
 function PlayState:render()
   self.board:render()
   
+  -- render highlighted tile if it exists
+  if self.highlightedTile then
+    -- multiply so drawing white rect makes it brighter
+    love.graphics.setBlendMode('add')
+    love.graphics.setColor(COLORS.white_quite_transparent)
+    love.graphics.rectangle('fill', (self.highlightedTile.gridX - 1) * 32 + (VIRTUAL_WIDTH - 272),
+      (self.highlightedTile.gridY - 1) * 32 + 16, 32, 32, 4)
+    -- back to alpha
+    love.graphics.setBlendMode('alpha')
+  end  
+
   -- draw cursor rect
   if self.rectHighlighted then
     love.graphics.setColor(COLORS.red_light)
@@ -53,6 +95,6 @@ function PlayState:render()
     love.graphics.setColor(COLORS.red)
   end
   love.graphics.setLineWidth(4)
-  love.graphics.rectangle('line', self.boardHighlightX * 32 + (VIRTUAL_WIDTH - 272),
+  love.graphics.rectangle('line', self.boardHighlightX * 32 + (VIRTUAL_WIDTH - 272), 
     self.boardHighlightY * 32 + 16, 32, 32, 4)
 end
