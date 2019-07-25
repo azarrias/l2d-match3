@@ -49,8 +49,9 @@ function PlayState:update(dt)
     -- if the tile is already highlighted, deselect
     elseif self.highlightedTile == self.board.tiles[y][x] then
       self.highlightedTile = nil
-    -- if the tile is not adjacent, remove highlight
+    -- if the tile is not adjacent, remove highlight and play error sound
     elseif math.abs(self.highlightedTile.gridX - x) + math.abs(self.highlightedTile.gridY - y) > 1 then
+      SOUNDS.error:play()
       self.highlightedTile = nil
     -- otherwise all is good, swap the tiles
     else
