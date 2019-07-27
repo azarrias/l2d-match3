@@ -70,6 +70,9 @@ function PlayState:update(dt)
         [self.highlightedTile] = { x = newTile.x, y = newTile.y },
         [newTile] =  { x = self.highlightedTile.x, y = self.highlightedTile.y }
       })
+      :finish(function()
+        self:handleMatches()
+      end)
     end
   end  
   Timer.update(dt)
@@ -99,3 +102,18 @@ function PlayState:render()
   love.graphics.rectangle('line', self.boardHighlightX * 32 + (VIRTUAL_WIDTH - 272), 
     self.boardHighlightY * 32 + 16, 32, 32, 4)
 end
+
+-- Checks for matches on the board and performs tween animations as needed
+function PlayState:handleMatches()
+  self.highlightedTile = nil
+  
+  -- if matches are produced, remove them and tween the falling blocks
+  local matches = self.board:searchMatches()
+  
+  if matches then
+    SOUNDS.match:stop()
+    SOUNDS.match:play()
+  end
+end
+
+  

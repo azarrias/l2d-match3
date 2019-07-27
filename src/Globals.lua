@@ -50,5 +50,6 @@ FONTS = {
 
 SOUNDS = {
   select = love.audio.newSource('sounds/select.wav', 'static'),
-  error = love.audio.newSource('sounds/error.wav', 'static')
+  error = love.audio.newSource('sounds/error.wav', 'static'),
+  match = love.audio.newSource('sounds/match.wav', 'static')
 }
