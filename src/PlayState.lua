@@ -113,7 +113,14 @@ function PlayState:handleMatches()
   if matches then
     SOUNDS.match:stop()
     SOUNDS.match:play()
+    
+    self.board:removeMatches()
+    
+    -- gets a table with tween values for tiles that should fall
+    local tilesToFall = self.board:getFallingTiles()
+    
+    -- tween the falling tiles
+    Timer.tween(0.25, tilesToFall)
   end
 end
-
   
