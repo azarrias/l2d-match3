@@ -50,7 +50,7 @@ function Board:searchMatches()
         colorToMatch = self.tiles[y][x].color
         -- if there was a match 3, get the tiles
         if numMatches >= 3 then
-          table.insert(matches, self:getElements(self.tiles, y, y, x - numMatches, x-1))
+          table.insert(matches, self:getElements(self.tiles, y, y, x - numMatches, x - 1))
         end
         
         numMatches = 1
@@ -68,7 +68,34 @@ function Board:searchMatches()
     end
   end
   
-  -- TODO: vertical matches
+  -- vertical matches
+  for x = 1, boardCols do
+    local colorToMatch = self.tiles[1][x].color
+    numMatches = 1
+    
+    for y = 2, boardRows do
+      if self.tiles[y][x].color == colorToMatch then
+        numMatches = numMatches + 1
+      else
+        colorToMatch = self.tiles[y][x].color
+        if numMatches >= 3 then
+          table.insert(matches, self:getElements(self.tiles, y - numMatches, y - 1, x, x))
+        end
+        
+        numMatches = 1
+        
+        -- no need to check the last two if they can't make a match three
+        if x >= 7 then
+          break
+        end
+      end
+    end
+    
+    -- account for the last row ending with a match
+    if numMatches >= 3 then
+      table.insert(matches, self:getElements(self.tiles, boardRows - numMatches + 1, boardRows, x, x))
+    end
+  end  
   
   self.matches = matches
   return #self.matches > 0 and self.matches or false
