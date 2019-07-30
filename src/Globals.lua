@@ -26,7 +26,7 @@ COLORS = {
   shadow = { 34, 32, 52 },
   turquoise = { 95, 205, 228 },
   yellow = { 255, 255, 0 },
-  white = { 255, 255, 255 },
+  white = { 255, 255, 255, 255 },
   white_semitransparent = { 255, 255, 255, 128 },
   white_quite_transparent = { 255, 255, 255, 96 }
 }

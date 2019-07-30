@@ -35,6 +35,9 @@ function StartState:init()
       table.insert(self.colors, e)
     end
   )
+  
+  -- used to tween animate state transition (fade out)
+  self.transitionAlpha = 0
 end  
 
 function StartState:update(dt)
@@ -50,9 +53,15 @@ function StartState:update(dt)
   
   if love.keyboard.keysPressed.enter or love.keyboard.keysPressed['return'] then
     if self.currentMenuItem == 1 then
-      gStateMachine:change('begin-game', {
-        level = 1
-      })
+      -- make fade out tween animation to the begin game state
+      Timer.tween(1, {
+        [self] = {transitionAlpha = COLORS.white[4]}
+      }):finish(function()
+            gStateMachine:change('begin-game', { level = 1 })
+            
+            -- remove color timer from Timer
+            self.colorTimer:remove()
+      end)
     else
       love.event.quit()
     end
@@ -83,6 +92,10 @@ function StartState:render()
   
   self:drawMatch3Text()
   self:drawOptions()
+  
+  -- draw transition rect; normally fully transparent, to transition to another state
+  love.graphics.setColor(COLORS.white[1], COLORS.white[2], COLORS.white[3], self.transitionAlpha)
+  love.graphics.rectangle('fill', 0, 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT)
 end
 
 function StartState:drawMatch3Text()
