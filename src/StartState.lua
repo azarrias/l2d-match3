@@ -53,6 +53,7 @@ function StartState:update(dt)
   
   if love.keyboard.keysPressed.enter or love.keyboard.keysPressed['return'] then
     if self.currentMenuItem == 1 then
+      SOUNDS.select:play()
       -- make fade out tween animation to the begin game state
       Timer.tween(1, {
         [self] = {transitionAlpha = COLORS.white[4]}

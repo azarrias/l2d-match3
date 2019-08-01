@@ -32,12 +32,16 @@ function PlayState:update(dt)
   
   if love.keyboard.keysPressed.up then
     self.boardHighlightY = math.max(0, self.boardHighlightY - 1)
+    SOUNDS.select:play()
   elseif love.keyboard.keysPressed.down then
     self.boardHighlightY = math.min(7, self.boardHighlightY + 1)
+    SOUNDS.select:play()
   elseif love.keyboard.keysPressed.left then
     self.boardHighlightX = math.max(0, self.boardHighlightX - 1)
+    SOUNDS.select:play()
   elseif love.keyboard.keysPressed.right then
     self.boardHighlightX = math.min(7, self.boardHighlightX + 1)
+    SOUNDS.select:play()
   end
   
   if love.keyboard.keysPressed.enter or love.keyboard.keysPressed['return'] then
