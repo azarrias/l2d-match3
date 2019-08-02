@@ -125,6 +125,15 @@ function PlayState:handleMatches()
     
     -- tween the falling tiles
     Timer.tween(0.25, tilesToFall)
+    :finish(function()
+      local newTiles = self.board:getNewTiles()
+      -- then, tween new tiles that spawn from the top
+      Timer.tween(0.25, newTiles)
+      :finish(function()
+        -- recursively call this function in case that new matches have ben created
+        self:handleMatches()
+      end)
+    end)
   end
 end
   

@@ -178,7 +178,7 @@ function Board:getFallingTiles()
       y = y - 1
     end
   end
-  
+
   -- create replacement tiles at the top of the screen
   for x = 1, 8 do
     for y = 8, 1, -1 do
@@ -196,6 +196,11 @@ function Board:getFallingTiles()
       end
     end
   end
-  
+
   return tweens
+end
+
+function Board:getNewTiles()
+  -- TODO: if creation is deferred nil Tiles become an issue
+  return {}
 end
