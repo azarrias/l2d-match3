@@ -20,6 +20,11 @@ function Board:initializeTiles()
       table.insert(self.tiles[tileY], Tile(tileX, tileY, math.random(18), math.random(6)))
     end
   end
+  
+  -- repeat until the board generated has no matches on start
+  while self:searchMatches() do
+    self:initializeTiles()
+  end
 end
 
 function Board:render()
