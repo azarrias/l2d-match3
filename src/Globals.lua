@@ -15,6 +15,7 @@ COLORS = {
   blue_dark = { 48, 96, 130 },
   cyan_light_muted_quite_opaque = { 95, 205, 228, 200 },
   gold = { 251, 242, 54 },
+  gray = { 56, 56, 56, 234 },
   green = { 106, 190, 47 },
   green_light = { 153, 229, 80 },
   mulberry = { 217, 87, 99 },
@@ -28,7 +29,8 @@ COLORS = {
   yellow = { 255, 255, 0 },
   white = { 255, 255, 255, 255 },
   white_semitransparent = { 255, 255, 255, 128 },
-  white_quite_transparent = { 255, 255, 255, 96 }
+  white_quite_transparent = { 255, 255, 255, 96 },
+  new_color
 }
 
 TEXTURES = {
