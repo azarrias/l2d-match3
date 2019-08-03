@@ -14,6 +14,8 @@ function PlayState:init()
   -- tile we're currently highlighting (preparing to swap)
   self.hightlightedTile = nil
   
+  self.score = 0
+  
   -- toggle cursor highlight every 0.5 seconds
   Timer.every(0.5, function()
     self.rectHighlighted = not self.rectHighlighted
@@ -133,6 +135,11 @@ function PlayState:handleMatches()
     self.canInput = false
     SOUNDS.match:stop()
     SOUNDS.match:play()
+    
+    -- add points to score for each match
+    for k, match in pairs(matches) do
+      self.score = self.score + #match * 50
+    end
     
     self.board:removeMatches()
     
