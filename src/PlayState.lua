@@ -30,55 +30,58 @@ function PlayState:update(dt)
     gStateMachine:change('start')
   end
   
-  if love.keyboard.keysPressed.up then
-    self.boardHighlightY = math.max(0, self.boardHighlightY - 1)
-    SOUNDS.select:play()
-  elseif love.keyboard.keysPressed.down then
-    self.boardHighlightY = math.min(7, self.boardHighlightY + 1)
-    SOUNDS.select:play()
-  elseif love.keyboard.keysPressed.left then
-    self.boardHighlightX = math.max(0, self.boardHighlightX - 1)
-    SOUNDS.select:play()
-  elseif love.keyboard.keysPressed.right then
-    self.boardHighlightX = math.min(7, self.boardHighlightX + 1)
-    SOUNDS.select:play()
-  end
-  
-  if love.keyboard.keysPressed.enter or love.keyboard.keysPressed['return'] then
-    local x, y = self.boardHighlightX + 1, self.boardHighlightY + 1
-    
-    -- if nothing is highlighted, highlight current tile
-    if not self.highlightedTile then
-      self.highlightedTile = self.board.tiles[y][x]
-    -- if the tile is already highlighted, deselect
-    elseif self.highlightedTile == self.board.tiles[y][x] then
-      self.highlightedTile = nil
-    -- if the tile is not adjacent, remove highlight and play error sound
-    elseif math.abs(self.highlightedTile.gridX - x) + math.abs(self.highlightedTile.gridY - y) > 1 then
-      SOUNDS.error:play()
-      self.highlightedTile = nil
-    -- otherwise all is good, swap the tiles
-    else
-      local tempX, tempY = self.highlightedTile.gridX, self.highlightedTile.gridY
-      local newTile = self.board.tiles[y][x]
-      
-      self.highlightedTile.gridX, self.highlightedTile.gridY = newTile.gridX, newTile.gridY
-      newTile.gridX, newTile.gridY = tempX, tempY
-      
-      self.board.tiles[self.highlightedTile.gridY][self.highlightedTile.gridX] =
-        self.highlightedTile
-      self.board.tiles[newTile.gridY][newTile.gridX] = newTile
-      
-      -- swap tween animation
-      Timer.tween(0.1, {
-        [self.highlightedTile] = { x = newTile.x, y = newTile.y },
-        [newTile] =  { x = self.highlightedTile.x, y = self.highlightedTile.y }
-      })
-      :finish(function()
-        self:handleMatches()
-      end)
+  if self.canInput then
+    if love.keyboard.keysPressed.up then
+      self.boardHighlightY = math.max(0, self.boardHighlightY - 1)
+      SOUNDS.select:play()
+    elseif love.keyboard.keysPressed.down then
+      self.boardHighlightY = math.min(7, self.boardHighlightY + 1)
+      SOUNDS.select:play()
+    elseif love.keyboard.keysPressed.left then
+      self.boardHighlightX = math.max(0, self.boardHighlightX - 1)
+      SOUNDS.select:play()
+    elseif love.keyboard.keysPressed.right then
+      self.boardHighlightX = math.min(7, self.boardHighlightX + 1)
+      SOUNDS.select:play()
     end
-  end  
+  
+    if love.keyboard.keysPressed.enter or love.keyboard.keysPressed['return'] then
+      local x, y = self.boardHighlightX + 1, self.boardHighlightY + 1
+    
+      -- if nothing is highlighted, highlight current tile
+      if not self.highlightedTile then
+        self.highlightedTile = self.board.tiles[y][x]
+      -- if the tile is already highlighted, deselect
+      elseif self.highlightedTile == self.board.tiles[y][x] then
+        self.highlightedTile = nil
+      -- if the tile is not adjacent, remove highlight and play error sound
+      elseif math.abs(self.highlightedTile.gridX - x) + math.abs(self.highlightedTile.gridY - y) > 1 then
+        SOUNDS.error:play()
+        self.highlightedTile = nil
+      -- otherwise all is good, swap the tiles
+      else
+        local tempX, tempY = self.highlightedTile.gridX, self.highlightedTile.gridY
+        local newTile = self.board.tiles[y][x]
+      
+        self.highlightedTile.gridX, self.highlightedTile.gridY = newTile.gridX, newTile.gridY
+        newTile.gridX, newTile.gridY = tempX, tempY
+      
+        self.board.tiles[self.highlightedTile.gridY][self.highlightedTile.gridX] =
+          self.highlightedTile
+        self.board.tiles[newTile.gridY][newTile.gridX] = newTile
+      
+        -- swap tween animation
+        Timer.tween(0.1, {
+          [self.highlightedTile] = { x = newTile.x, y = newTile.y },
+          [newTile] =  { x = self.highlightedTile.x, y = self.highlightedTile.y }
+        })
+        :finish(function()
+          self:handleMatches()
+        end)
+      end
+    end
+  end
+
   Timer.update(dt)
 end
 
@@ -115,6 +118,8 @@ function PlayState:handleMatches()
   local matches = self.board:searchMatches()
   
   if matches then
+    -- don't allow any input when matches are being processed
+    self.canInput = false
     SOUNDS.match:stop()
     SOUNDS.match:play()
     
@@ -134,6 +139,9 @@ function PlayState:handleMatches()
         self:handleMatches()
       end)
     end)
+  else
+    -- if there are no matches, input is allowed again
+    self.canInput = true
   end
 end
   
