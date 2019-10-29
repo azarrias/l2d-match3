@@ -42,8 +42,19 @@ function PlayState:update(dt)
   
   -- go to game over state if time runs out
   if self.timer <= 0 then
+    -- clear timers from prior PlayStates
     Timer.clear()
     gStateMachine:change('game-over', {
+      score = self.score
+    })
+  end
+  
+  -- go to next level if score goal is surpassed
+  if self.score >= self.scoreGoal then
+    -- clear timers from prior PlayStates
+    Timer.clear()
+    gStateMachine:change('begin-game', {
+      level = self.level + 1,
       score = self.score
     })
   end
