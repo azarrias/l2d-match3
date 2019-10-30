@@ -90,7 +90,7 @@ function Board:searchMatches()
         numMatches = 1
         
         -- no need to check the last two if they can't make a match three
-        if x >= 7 then
+        if y >= 7 then
           break
         end
       end
