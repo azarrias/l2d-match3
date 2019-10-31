@@ -199,8 +199,3 @@ function Board:getFallingTiles()
 
   return tweens
 end
-
-function Board:getNewTiles()
-  -- TODO: if creation is deferred nil Tiles become an issue
-  return {}
-end
