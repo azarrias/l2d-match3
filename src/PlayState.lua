@@ -163,9 +163,10 @@ function PlayState:handleMatches()
     SOUNDS.match:stop()
     SOUNDS.match:play()
     
-    -- add points to score for each match
+    -- add points to score for each tile within the match
     for k, match in pairs(matches) do
       self.score = self.score + #match * 50
+      self.timer = self.timer + #match
     end
     
     self.board:removeMatches()
