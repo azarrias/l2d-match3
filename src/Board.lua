@@ -1,8 +1,11 @@
 Board = Class{}
 
 local boardCols, boardRows = 8, 8
+local NUM_TILE_VARIATIONS = 6
+local NUM_TILE_COLORS = 18
 
-function Board:init(x, y)
+function Board:init(level, x, y)
+  self.level = level
   self.x, self.y = x, y
   self.matches = {}
   self:initializeTiles()
@@ -17,7 +20,7 @@ function Board:initializeTiles()
     
     for tileX = 1, boardCols do
       -- new tile
-      table.insert(self.tiles[tileY], Tile(tileX, tileY, math.random(18), math.random(6)))
+      table.insert(self.tiles[tileY], Tile(tileX, tileY, math.random(18), math.random(self.level % NUM_TILE_VARIATIONS)))
     end
   end
   
@@ -186,7 +189,7 @@ function Board:getFallingTiles()
 
       -- if the tile is nil, we need to add a new one
       if not tile then
-        local tile = Tile(x, y, math.random(18), math.random(6))
+        local tile = Tile(x, y, math.random(18), math.random(self.level % NUM_TILE_VARIATIONS))
         tile.y = -32
         self.tiles[y][x] = tile
 

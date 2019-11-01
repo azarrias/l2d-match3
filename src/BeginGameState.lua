@@ -6,13 +6,13 @@ function BeginGameState:init()
   
   -- starting level label out of screen for tween animation
   self.levelLabelY = -64
-  
-  -- spawn a board and place it to the right
-  self.board = Board(VIRTUAL_WIDTH - 272, 16)
 end
 
 function BeginGameState:enter(param)
   self.level = param.level
+  
+  -- spawn a board and place it to the right
+  self.board = Board(self.level, VIRTUAL_WIDTH - 272, 16)
   
   -- fade in 1 second using foreground rectangle alpha
   Timer.tween(1, {
