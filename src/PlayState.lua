@@ -165,7 +165,9 @@ function PlayState:handleMatches()
     
     -- add points to score for each tile within the match
     for k, match in pairs(matches) do
-      self.score = self.score + #match * 50
+      for i, tile in pairs(match) do
+        self.score = self.score + 40 + tile.variety * 10
+      end
       self.timer = self.timer + #match
     end
     
