@@ -14,6 +14,9 @@ function PlayState:init()
   -- tile we're currently highlighting (preparing to swap)
   self.hightlightedTile = nil
   
+  -- transition alpha for the shining effect on shining tiles
+  self.transitionAlpha = 0
+  
   self.score = 0
   self.timer = 60
   
@@ -33,6 +36,18 @@ function PlayState:enter(params)
   self.board = params.board or Board(VIRTUAL_WIDTH - 272, 16)
   self.score = params.score or 0
   self.scoreGoal = self.level * 1.25 * 1000
+  
+  -- tween alpha to make shining effect when rendering on top of the board
+  Timer.every(1.2, function ()
+    Timer.tween(0.2, {
+      [self] = { transitionAlpha = V11 and 0.5 or 127 }
+    }) 
+    : finish(function()
+        Timer.tween(0.2, {
+          [self] = { transitionAlpha = 0 }
+        })
+      end)
+  end) 
 end
 
 function PlayState:update(dt)
@@ -116,6 +131,20 @@ end
 
 function PlayState:render()
   self.board:render()
+  
+  -- make shining effect for tiles that are of the shining type
+  -- drawing on top of the board in additive blend mode
+  for y = 1, #self.board.tiles do
+    for x = 1, #self.board.tiles[1] do
+      if self.board.tiles[y][x].shiny then
+        love.graphics.setBlendMode('add')
+        love.graphics.setColor(COLORS.white[1], COLORS.white[2], COLORS.white[3], self.transitionAlpha)
+        love.graphics.draw(TEXTURES.main, FRAMES.tiles[self.board.tiles[y][x].color][self.board.tiles[y][x].variety], 
+          self.board.tiles[y][x].x + self.board.x, self.board.tiles[y][x].y + self.board.y)
+        love.graphics.setBlendMode('alpha')
+      end
+    end
+  end
   
   -- render highlighted tile if it exists
   if self.highlightedTile then

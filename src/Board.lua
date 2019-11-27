@@ -20,7 +20,9 @@ function Board:initializeTiles()
     
     for tileX = 1, boardCols do
       -- new tile
-      table.insert(self.tiles[tileY], Tile(tileX, tileY, math.random(18), math.random(self.level % NUM_TILE_VARIATIONS)))
+      -- 5% chance to generate shiny tiles starting on level 5
+      isShiny = self.level >= 5 and math.random(100) <= 5 and true or false
+      table.insert(self.tiles[tileY], Tile(tileX, tileY, math.random(18), math.random(self.level % NUM_TILE_VARIATIONS), isShiny))
     end
   end
   

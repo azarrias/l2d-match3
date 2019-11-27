@@ -1,6 +1,6 @@
 Tile = Class{}
 
-function Tile:init(x, y, color, variety)
+function Tile:init(x, y, color, variety, shiny)
   self.gridX = x
   self.gridY = y
   
@@ -9,6 +9,7 @@ function Tile:init(x, y, color, variety)
   
   self.color = color
   self.variety = variety
+  self.shiny = shiny
 end
 
 function Tile:render(x, y)
