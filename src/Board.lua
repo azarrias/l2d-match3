@@ -48,22 +48,33 @@ function Board:searchMatches()
   -- how many tiles of the same color are there in a row
   local numMatches = 1
   
+  -- flag to account for shiny tiles
+  local foundShiny = false
+  
   -- check for horizontal matches
   for y = 1, boardRows do
     local colorToMatch = self.tiles[y][1].color
     numMatches = 1
+    foundShiny = self.tiles[y][1].shiny
     
     for x = 2, boardCols do
       if self.tiles[y][x].color == colorToMatch then
         numMatches = numMatches + 1
+        foundShiny = foundShiny or self.tiles[y][x].shiny
       else
         colorToMatch = self.tiles[y][x].color
+        
         -- if there was a match 3, get the tiles
         if numMatches >= 3 then
-          table.insert(matches, self:getElements(self.tiles, y, y, x - numMatches, x - 1))
+          if foundShiny then
+            table.insert(matches, self:getElements(self.tiles, y, y, 1, boardCols))
+          else
+            table.insert(matches, self:getElements(self.tiles, y, y, x - numMatches, x - 1))
+          end
         end
         
         numMatches = 1
+        foundShiny = self.tiles[y][x].shiny
         
         -- no need to check the last two if they can't make a match three
         if x >= 7 then
@@ -74,7 +85,11 @@ function Board:searchMatches()
     
     -- account for the last row ending with a match
     if numMatches >= 3 then
-      table.insert(matches, self:getElements(self.tiles, y, y, boardCols - numMatches + 1, boardCols))
+      if foundShiny then
+        table.insert(matches, self:getElements(self.tiles, y, y, 1, boardCols))
+      else
+        table.insert(matches, self:getElements(self.tiles, y, y, boardCols - numMatches + 1, boardCols))
+      end
     end
   end
   
@@ -82,17 +97,24 @@ function Board:searchMatches()
   for x = 1, boardCols do
     local colorToMatch = self.tiles[1][x].color
     numMatches = 1
+    foundShiny = self.tiles[1][x].shiny
     
     for y = 2, boardRows do
       if self.tiles[y][x].color == colorToMatch then
         numMatches = numMatches + 1
+        foundShiny = foundShiny or self.tiles[y][x].shiny
       else
         colorToMatch = self.tiles[y][x].color
         if numMatches >= 3 then
-          table.insert(matches, self:getElements(self.tiles, y - numMatches, y - 1, x, x))
+          if foundShiny then
+            table.insert(matches, self:getElements(self.tiles, 1, boardRows, x, x))
+          else
+            table.insert(matches, self:getElements(self.tiles, y - numMatches, y - 1, x, x))
+          end
         end
         
         numMatches = 1
+        foundShiny = self.tiles[y][x].shiny
         
         -- no need to check the last two if they can't make a match three
         if y >= 7 then
@@ -103,7 +125,11 @@ function Board:searchMatches()
     
     -- account for the last row ending with a match
     if numMatches >= 3 then
-      table.insert(matches, self:getElements(self.tiles, boardRows - numMatches + 1, boardRows, x, x))
+      if foundShiny then
+        table.insert(matches, self:getElements(self.tiles, 1, boardRows, x, x))
+      else
+        table.insert(matches, self:getElements(self.tiles, boardRows - numMatches + 1, boardRows, x, x))
+      end
     end
   end  
   
