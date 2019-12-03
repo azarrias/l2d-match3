@@ -14,6 +14,14 @@ end
 function Board:initializeTiles()
   self.tiles = {}
   
+  -- choose random available colors depending on the level
+  local tileColors = Set.new()
+  local numColors = math.min(self.level + 2, 8)
+  
+  while #tileColors < numColors do
+    tileColors:insert(math.random(18))
+  end
+  
   for tileY = 1, boardRows do
     -- new row empty table
     table.insert(self.tiles, {})
@@ -22,7 +30,7 @@ function Board:initializeTiles()
       -- new tile
       -- 5% chance to generate shiny tiles starting on level 5
       isShiny = self.level >= 5 and math.random(100) <= 5 and true or false
-      table.insert(self.tiles[tileY], Tile(tileX, tileY, math.random(18), math.random(self.level % NUM_TILE_VARIATIONS), isShiny))
+      table.insert(self.tiles[tileY], Tile(tileX, tileY, tileColors[math.random(numColors)], math.random(self.level % NUM_TILE_VARIATIONS), isShiny))
     end
   end
   

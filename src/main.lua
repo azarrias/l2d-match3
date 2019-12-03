@@ -2,6 +2,7 @@ require 'globals'
 push = require 'lib.push'
 Class = require 'lib.class'
 Timer = require 'lib.knife.timer'
+Set = require 'lib.set'
 
 require 'StateMachine'
 require 'BaseState'
