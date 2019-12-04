@@ -121,6 +121,11 @@ function PlayState:update(dt)
         })
         :finish(function()
           self:handleMatches()
+          while self.board:isDeadlock() do
+            print "There are no possible matches!!! Rearranging cells...."
+            self.board:shuffle()
+          end
+          self:handleMatches()
         end)
       end
     end

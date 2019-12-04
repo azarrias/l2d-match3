@@ -8,6 +8,7 @@ function Board:init(level, x, y)
   self.level = level
   self.x, self.y = x, y
   self.matches = {}
+  self.tileColors = Set.new()
   self:initializeTiles()
 end
 
@@ -15,11 +16,9 @@ function Board:initializeTiles()
   self.tiles = {}
   
   -- choose random available colors depending on the level
-  local tileColors = Set.new()
-  local numColors = math.min(self.level + 2, 8)
-  
-  while #tileColors < numColors do
-    tileColors:insert(math.random(18))
+  local numColors = math.min(self.level + 3, 8)
+  while #self.tileColors < numColors do
+    self.tileColors:insert(math.random(18))
   end
   
   for tileY = 1, boardRows do
@@ -30,12 +29,12 @@ function Board:initializeTiles()
       -- new tile
       -- 5% chance to generate shiny tiles starting on level 5
       isShiny = self.level >= 5 and math.random(100) <= 5 and true or false
-      table.insert(self.tiles[tileY], Tile(tileX, tileY, tileColors[math.random(numColors)], math.random((self.level - 1) % NUM_TILE_VARIATIONS + 1), isShiny))
+      table.insert(self.tiles[tileY], Tile(tileX, tileY, self.tileColors[math.random(#self.tileColors)], math.random(1, (self.level - 1) % NUM_TILE_VARIATIONS + 1), isShiny))
     end
   end
   
-  -- repeat until the board generated has no matches on start
-  while self:searchMatches() do
+  -- repeat until the board generated has no matches or deadlocks on start
+  while self:searchMatches() or self:isDeadlock() do
     self:initializeTiles()
   end
 end
@@ -225,7 +224,7 @@ function Board:getFallingTiles()
 
       -- if the tile is nil, we need to add a new one
       if not tile then
-        local tile = Tile(x, y, math.random(18), math.random(self.level % NUM_TILE_VARIATIONS))
+        local tile = Tile(x, y, self.tileColors[math.random(#self.tileColors)], math.random(1, (self.level - 1) % NUM_TILE_VARIATIONS + 1), isShiny)
         tile.y = -32
         self.tiles[y][x] = tile
 
@@ -237,4 +236,61 @@ function Board:getFallingTiles()
   end
 
   return tweens
+end
+
+function Board:isDeadlock()
+  -- check for all cells
+  for y = 1, boardRows - 1 do
+    for x = 1, boardCols - 1 do
+      -- exchange cell with the one to its right
+      local tempTile = self.tiles[y][x]
+      self.tiles[y][x] = self.tiles[y][x+1]      
+      self.tiles[y][x+1] = tempTile
+      
+      -- check for matches and undo move
+      local foundMatches = self:searchMatches()
+      
+      -- undo move
+      self.tiles[y][x+1] = self.tiles[y][x]
+      self.tiles[y][x] = tempTile
+      
+      if foundMatches then
+        return false
+      end
+      
+      -- exchange cell with the one below
+      self.tiles[y][x] = self.tiles[y+1][x]
+      self.tiles[y+1][x] = tempTile
+      
+      -- check for matches and undo move
+      foundMatches = self:searchMatches()
+      
+      self.tiles[y+1][x] = self.tiles[y][x]
+      self.tiles[y][x] = tempTile
+      
+      if foundMatches then
+        return false
+      end
+    end
+  end
+  
+  return true
+end
+
+function Board:shuffle()
+  -- rearrange the existing tiles
+  for y = boardRows, 2, -1 do
+    for x = boardCols, 2, -1 do
+      r = math.random(y)
+      c = math.random(x)
+      
+      local tmp = self.tiles[y][x]:clone()
+      self.tiles[y][x].color = self.tiles[r][c].color
+      self.tiles[y][x].variety = self.tiles[r][c].variety
+      self.tiles[y][x].shiny = self.tiles[r][c].shiny
+      self.tiles[r][c].color = tmp.color
+      self.tiles[r][c].variety = tmp.variety
+      self.tiles[r][c].shiny = tmp.shiny
+    end
+  end
 end
