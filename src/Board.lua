@@ -278,7 +278,7 @@ function Board:isDeadlock()
 end
 
 function Board:shuffle()
-  -- rearrange the existing tiles
+  -- rearrange the existing tiles using modern version of the Fisher–Yates shuffle
   for y = boardRows, 2, -1 do
     for x = boardCols, 2, -1 do
       r = math.random(y)

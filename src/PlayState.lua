@@ -113,6 +113,9 @@ function PlayState:update(dt)
         self.board.tiles[self.highlightedTile.gridY][self.highlightedTile.gridX] =
           self.highlightedTile
         self.board.tiles[newTile.gridY][newTile.gridX] = newTile
+        
+        -- check if the move produces a match
+        local createsMatch = self.board:searchMatches()
       
         -- swap tween animation
         Timer.tween(0.1, {
@@ -120,12 +123,28 @@ function PlayState:update(dt)
           [newTile] =  { x = self.highlightedTile.x, y = self.highlightedTile.y }
         })
         :finish(function()
-          self:handleMatches()
-          while self.board:isDeadlock() do
-            print "There are no possible matches!!! Rearranging cells...."
-            self.board:shuffle()
+          -- if it is a match then handle it, otherwise undo the move
+          if createsMatch then
+            self:handleMatches()
+            while self.board:isDeadlock() do
+              print "There are no possible matches!!! Rearranging cells...."
+              self.board:shuffle()
+            end
+            self:handleMatches()
+          else
+            SOUNDS.error:play()
+            Timer.tween(0.1, {
+              [self.highlightedTile] = { x = newTile.x, y = newTile.y },
+              [newTile] =  { x = self.highlightedTile.x, y = self.highlightedTile.y }
+            })
+            :finish(function()
+              newTile.gridX, newTile.gridY = self.highlightedTile.gridX, self.highlightedTile.gridY
+              self.highlightedTile.gridX, self.highlightedTile.gridY = tempX, tempY
+              self.board.tiles[self.highlightedTile.gridY][self.highlightedTile.gridX] = self.highlightedTile
+              self.board.tiles[newTile.gridY][newTile.gridX] = newTile
+              self.highlightedTile = nil
+            end)
           end
-          self:handleMatches()
         end)
       end
     end
