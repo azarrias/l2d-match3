@@ -14,6 +14,7 @@ end
 
 function Board:initializeTiles()
   self.tiles = {}
+  self.prevTiles = {}
   
   -- choose random available colors depending on the level
   local numColors = math.min(self.level + 3, 8)
@@ -37,6 +38,8 @@ function Board:initializeTiles()
   while self:searchMatches() or self:isDeadlock() do
     self:initializeTiles()
   end
+  
+  self.prevTiles = deepcopy(self.tiles)
 end
 
 function Board:render()
@@ -234,6 +237,8 @@ function Board:getFallingTiles()
       end
     end
   end
+  
+  self:check("after creating falling tiles")
 
   return tweens
 end
@@ -293,4 +298,67 @@ function Board:shuffle()
       self.tiles[r][c].shiny = tmp.shiny
     end
   end
+end
+
+function Board:check(checkpoint)
+  local message = ""
+  for y = 1, boardRows do
+    for x = 1, boardRows do
+      if self.tiles[y][x].gridX ~= x then
+        message = message .. "\n(" .. x .. "," .. y .. "): " .. "GridX is " .. self.tiles[y][x].gridX
+      end
+      if self.tiles[y][x].gridY ~= y then
+        message = message .. "\n(" .. x .. "," .. y .. "): " .. "GridY is " .. self.tiles[y][x].gridY
+      end
+      if self.tiles[y][x].x ~= (x - 1) * 32 then
+        message = message .. "\n(" .. x .. "," .. y .. "): " .. "x is " .. self.tiles[y][x].x .. "(should be " .. (x - 1) * 32 .. ")"
+      end
+      if self.tiles[y][x].y ~= (y - 1) * 32 then
+        message = message .. "\n(" .. x .. "," .. y .. "): " .. "y is " .. self.tiles[y][x].y .. "(should be " .. (y - 1) * 32 .. ")"
+      end
+      if self.tiles[y][x] == nil then
+        message = message .. "\n(" .. x .. "," .. y .. "): " .. "the tile is nil"
+      end
+    end
+  end
+  
+--  if message:len() > 0 then
+  --if message:len() == 0 then
+    message = "Checking board " .. checkpoint .. message
+    print (message)
+    print(debug.traceback())
+    
+    print ("Previous tiles")
+    for y = 1, boardRows do
+      local tilesStr = ""
+      for x = 1, boardCols do
+        if self.prevTiles[y][x] then
+          tilesStr = tilesStr .. "(" .. x .. "," .. y .. ") " .. "G:(" .. self.prevTiles[y][x].gridX .. "," .. self.prevTiles[y][x].gridY 
+            .. ") C:" .. string.format("%02d", self.prevTiles[y][x].color) .. " V:" .. self.prevTiles[y][x].variety .. " S:"
+            .. (self.prevTiles[y][x].shiny and "T" or "F") .. " (" .. string.format("%03d", self.prevTiles[y][x].x) .. "," 
+            .. string.format("%03d", self.prevTiles[y][x].y) .. ") | "
+        else
+          tilesStr = tilesStr .. "                                     | "
+        end
+      end
+      print (tilesStr)
+    end
+    
+    print ("Current tiles")
+    for y = 1, boardRows do
+      local tilesStr = ""
+      for x = 1, boardCols do
+        if self.tiles[y][x] then
+          tilesStr = tilesStr .. "(" .. x .. "," .. y .. ") " .. "G:(" .. self.tiles[y][x].gridX .. "," .. self.tiles[y][x].gridY 
+            .. ") C:" .. string.format("%02d", self.tiles[y][x].color) .. " V:" .. self.tiles[y][x].variety .. " S:"
+            .. (self.tiles[y][x].shiny and "T" or "F") .. " (" .. string.format("%03d", self.tiles[y][x].x) .. "," 
+            .. string.format("%03d", self.tiles[y][x].y) .. ") | "
+        else
+          tilesStr = tilesStr .. "                                      |"
+        end
+      end
+      print (tilesStr)
+    end
+    print ("")
+--  end
 end

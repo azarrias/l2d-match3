@@ -62,3 +62,26 @@ function round(num, numDecimalPlaces)
   local mult = 10^(numDecimalPlaces or 0)
   return math.floor(num * mult + 0.5) / mult
 end
+
+-- It is important that only one argument is supplied to this version of the deepcopy function. 
+-- Otherwise, it will attempt to use the second argument as a table, which can have unintended consequences. 
+function deepcopy(orig, copies)
+    copies = copies or {}
+    local orig_type = type(orig)
+    local copy
+    if orig_type == 'table' then
+        if copies[orig] then
+            copy = copies[orig]
+        else
+            copy = {}
+            copies[orig] = copy
+            setmetatable(copy, deepcopy(getmetatable(orig), copies))
+            for orig_key, orig_value in next, orig, nil do
+                copy[deepcopy(orig_key, copies)] = deepcopy(orig_value, copies)
+            end
+        end
+    else -- number, string, boolean, etc
+        copy = orig
+    end
+    return copy
+end

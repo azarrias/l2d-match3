@@ -113,10 +113,10 @@ function PlayState:update(dt)
         self.board.tiles[self.highlightedTile.gridY][self.highlightedTile.gridX] =
           self.highlightedTile
         self.board.tiles[newTile.gridY][newTile.gridX] = newTile
-        
+
         -- check if the move produces a match
         local createsMatch = self.board:searchMatches()
-      
+            
         -- swap tween animation
         Timer.tween(0.1, {
           [self.highlightedTile] = { x = newTile.x, y = newTile.y },
@@ -125,11 +125,6 @@ function PlayState:update(dt)
         :finish(function()
           -- if it is a match then handle it, otherwise undo the move
           if createsMatch then
-            self:handleMatches()
-            while self.board:isDeadlock() do
-              print "There are no possible matches!!! Rearranging cells...."
-              self.board:shuffle()
-            end
             self:handleMatches()
           else
             SOUNDS.error:play()
@@ -234,6 +229,11 @@ function PlayState:handleMatches()
     :finish(function()
       -- recursively call this function in case that new matches have ben created
       self:handleMatches()
+      while self.board:isDeadlock() do
+        print "There are no possible matches!!! Rearranging cells...."
+        self.board:shuffle()
+        self:handleMatches() -- se rompe aquí
+      end
     end)
   else
     -- if there are no matches, input is allowed again

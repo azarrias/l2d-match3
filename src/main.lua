@@ -19,6 +19,9 @@ local backgroundX, backgroundScrollSpeed
 
 function love.load(arg)
   if arg[#arg] == "-debug" then require("mobdebug").start() end
+  -- turn off stdout buffering for debugging purposes
+  --io.stdout:setvbuf('no')
+  
   -- use nearest-neighbor (point) filtering on upscaling and downscaling to prevent blurring of text and 
   -- graphics instead of the bilinear filter that is applied by default 
   love.graphics.setDefaultFilter('nearest', 'nearest')
