@@ -17,9 +17,13 @@ function Board:initializeTiles()
   self.prevTiles = {}
   
   -- choose random available colors depending on the level
-  local numColors = math.min(self.level + 3, 8)
+  -- divide colors in two sets (some colors are too similar)
+  -- odd level numbers use color set 1
+  -- even level numbers use color set 2
+  local numColors = math.min(self.level + 4, 8)
+  local numColorSet = self.level % 2
   while #self.tileColors < numColors do
-    self.tileColors:insert(math.random(18))
+    self.tileColors:insert(math.random(NUM_TILE_COLORS / 2) * 2 - numColorSet)
   end
   
   for tileY = 1, boardRows do
@@ -36,10 +40,9 @@ function Board:initializeTiles()
   
   -- repeat until the board generated has no matches or deadlocks on start
   while self:searchMatches() or self:isDeadlock() do
-    self:initializeTiles()
+    --self:initializeTiles()
+    self:shuffle()
   end
-  
-  self.prevTiles = deepcopy(self.tiles)
 end
 
 function Board:render()
@@ -227,6 +230,8 @@ function Board:getFallingTiles()
 
       -- if the tile is nil, we need to add a new one
       if not tile then
+        -- 5% chance to generate shiny tiles starting on level 5
+        isShiny = self.level >= 5 and math.random(100) <= 5 and true or false
         local tile = Tile(x, y, self.tileColors[math.random(#self.tileColors)], math.random(1, (self.level - 1) % NUM_TILE_VARIATIONS + 1), isShiny)
         tile.y = -32
         self.tiles[y][x] = tile
@@ -238,8 +243,6 @@ function Board:getFallingTiles()
     end
   end
   
-  self:check("after creating falling tiles")
-
   return tweens
 end
 

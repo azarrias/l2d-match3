@@ -11,11 +11,12 @@ function GenerateTileQuads(atlas)
 
     local counter = 1
 
-    -- 9 rows of tiles
-    for row = 1, 9 do
-        -- two sets of 6 cols, different tile varietes
-        for i = 1, 2 do
+    -- two sets of 6 cols, different tile varieties
+    for set = 1, 2 do
+        -- 9 rows of tiles
+        for row = 1, 9 do
             tiles[counter] = {}
+            x = (set - 1) * 6 * 32
             
             for col = 1, 6 do
                 table.insert(tiles[counter], love.graphics.newQuad(
@@ -24,10 +25,10 @@ function GenerateTileQuads(atlas)
                 x = x + 32
             end
 
+            y = y + 32
             counter = counter + 1
         end
-        y = y + 32
-        x = 0
+        y = 0
     end
 
     return tiles
