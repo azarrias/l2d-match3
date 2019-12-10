@@ -44,10 +44,6 @@ function BeginGameState:enter(param)
 end
 
 function BeginGameState:update(dt)
-  if love.keyboard.keysPressed.escape then
-    gStateMachine:change('start')
-  end
-  
   Timer.update(dt)
 end
 
