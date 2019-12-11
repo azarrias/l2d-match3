@@ -29,6 +29,12 @@ function PlayState:init()
   Timer.every(1, function()
     self.timer = self.timer - 1
   end)
+
+  -- board deadlock label out of screen for tween animation
+  self.levelLabelY = -64
+  -- flag to keep track of the tweening animation when shuffling tiles
+  self.isTweening = false
+
 end
 
 function PlayState:enter(params)
@@ -64,17 +70,23 @@ function PlayState:update(dt)
     })
   end
   
-  -- go to next level if score goal is surpassed
-  if self.score >= self.scoreGoal then
-    -- clear timers from prior PlayStates
-    Timer.clear()
-    gStateMachine:change('begin-game', {
-      level = self.level + 1,
-      score = self.score
-    })
-  end
-  
   if self.canInput then
+      -- go to next level if score goal is surpassed
+    if self.score >= self.scoreGoal then
+      self.canInput = false
+      -- clear timers from prior PlayStates
+      Timer.clear()
+      --gStateMachine:change('begin-game', {
+      gStateMachine:change('level-clear', {
+        --level = self.level + 1,
+        level = self.level,
+        board = self.board,
+        score = self.score,
+        scoreGoal = self.scoreGoal,
+        timer = self.timer
+      })
+    end
+    
     if love.keyboard.keysPressed.up then
       self.boardHighlightY = math.max(0, self.boardHighlightY - 1)
       SOUNDS.select:play()
@@ -196,6 +208,15 @@ function PlayState:render()
   love.graphics.printf('Score: ' .. tostring(self.score), 20, 52, 182, 'center')
   love.graphics.printf('Goal: ' .. tostring(self.scoreGoal), 20, 80, 182, 'center')
   love.graphics.printf('Timer: ' .. tostring(self.timer), 20, 108, 182, 'center')
+  
+  -- Display board deadlock UI message
+  love.graphics.setColor(COLORS.cyan_light_muted_quite_opaque)
+  love.graphics.rectangle('fill', 0, self.levelLabelY - 8, VIRTUAL_WIDTH, 48)
+  
+  love.graphics.setColor(COLORS.white)
+  love.graphics.setFont(FONTS.large)
+  love.graphics.printf('Rearranging tiles',
+    0, self.levelLabelY, VIRTUAL_WIDTH, 'center')
 end
 
 -- Checks for matches on the board and performs tween animations as needed
@@ -229,14 +250,36 @@ function PlayState:handleMatches()
     :finish(function()
       -- recursively call this function in case that new matches have ben created
       self:handleMatches()
+      local enterDeadlockTrigger = true
       while self.board:isDeadlock() do
+        self.isTweening = true
+        if enterDeadlockTrigger then
+          enterDeadlockTrigger = false
+          -- board deadlock message tween animation
+          Timer.tween(0.25, {
+            [self] = { levelLabelY = VIRTUAL_HEIGHT / 2 - 8 }
+          })
+          -- pause for one second with Timer.after
+          :finish(function()
+            Timer.after(1, function()
+              -- then animate the label going down past the bottom edge
+              Timer.tween(0.25, {
+                [self] = { levelLabelY = VIRTUAL_HEIGHT + 30 }
+              })
+              :finish(function()
+                self.isTweening = false
+                self.canInput = true
+              end)
+            end)
+          end)
+        end
         print "There are no possible matches!!! Rearranging cells...."
         self.board:shuffle()
-        self:handleMatches() -- se rompe aquí
+        self:handleMatches()
       end
     end)
-  else
-    -- if there are no matches, input is allowed again
+  elseif not self.isTweening then
+    -- if there are no matches or tweens going on, input is allowed again
     self.canInput = true
   end
 end

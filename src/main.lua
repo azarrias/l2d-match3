@@ -10,6 +10,7 @@ require 'StartState'
 require 'BeginGameState'
 require 'PlayState'
 require 'GameOverState'
+require 'LevelClearState'
 
 require 'Board'
 require 'Tile'
@@ -42,6 +43,7 @@ function love.load(arg)
     start = function() return StartState() end,
     ['begin-game'] = function() return BeginGameState() end,
     play = function() return PlayState() end,
+    ['level-clear'] = function() return LevelClearState() end,
     ['game-over'] = function() return GameOverState() end
   }
   gStateMachine:change('start')
