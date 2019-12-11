@@ -11,6 +11,16 @@ local marginX = (VIRTUAL_WIDTH - tileSide * cols) / 2
 local marginY = (VIRTUAL_HEIGHT - tileSide * rows) / 2
 local menuOptions = { "Start", "Quit Game" }
 
+-- find bounds for both menu options for mouse pressed events
+local startWidth = FONTS.medium:getWidth(menuOptions[1])
+local startX = VIRTUAL_WIDTH / 2 - startWidth / 2
+local startHeight = FONTS.medium:getHeight(menuOptions[1])
+local startY = VIRTUAL_HEIGHT / 2 + 12 + 8
+local quitWidth = FONTS.medium:getWidth(menuOptions[2])
+local quitX = VIRTUAL_WIDTH / 2 - startWidth / 2
+local quitHeight = FONTS.medium:getHeight(menuOptions[2])
+local quitY = VIRTUAL_HEIGHT / 2 + 12 + 33
+
 function StartState:init()
   self.currentMenuItem = 1
   
@@ -43,7 +53,7 @@ end
 function StartState:update(dt)
   -- handle input
   if love.keyboard.keysPressed.escape then
-    love.event.quit()
+    self:commandQuit()
   end
   
   if love.keyboard.keysPressed.up or love.keyboard.keysPressed.down then
@@ -53,18 +63,21 @@ function StartState:update(dt)
   
   if love.keyboard.keysPressed.enter or love.keyboard.keysPressed['return'] then
     if self.currentMenuItem == 1 then
-      SOUNDS.select:play()
-      -- make fade out tween animation to the begin game state
-      Timer.tween(1, {
-        [self] = {transitionAlpha = COLORS.white[4]}
-      }):finish(function()
-            gStateMachine:change('begin-game', { level = 1 })
-            
-            -- remove color timer from Timer
-            self.colorTimer:remove()
-      end)
+      self:commandStart()
     else
-      love.event.quit()
+      self:commandQuit()
+    end
+  end
+  
+  if love.mouse.mousePressed then
+    if love.mouse.mousePressed.button == 1 then
+      if love.mouse.mousePressed.x >= startX and love.mouse.mousePressed.x <= startX + startWidth 
+        and love.mouse.mousePressed.y >= startY and love.mouse.mousePressed.y <= startY + startHeight then
+          self:commandStart()
+      elseif love.mouse.mousePressed.x >= quitX and love.mouse.mousePressed.x <= quitX + quitWidth 
+        and love.mouse.mousePressed.y >= quitY and love.mouse.mousePressed.y <= quitY + quitHeight then
+          self:commandQuit()
+      end
     end
   end
   
@@ -157,4 +170,20 @@ function StartState:drawTextShadow(text, y)
     love.graphics.printf(text, 1, y + 1, VIRTUAL_WIDTH, 'center')
     love.graphics.printf(text, 0, y + 1, VIRTUAL_WIDTH, 'center')
     love.graphics.printf(text, 1, y + 2, VIRTUAL_WIDTH, 'center')
+end
+
+function StartState:commandStart()
+  SOUNDS.select:play()
+  -- make fade out tween animation to the begin game state
+  Timer.tween(1, {
+    [self] = {transitionAlpha = COLORS.white[4]}
+  }):finish(function()
+    gStateMachine:change('begin-game', { level = 1 })
+    -- remove color timer from Timer
+    self.colorTimer:remove()
+  end)
+end
+
+function StartState:commandQuit()
+  love.event.quit()
 end

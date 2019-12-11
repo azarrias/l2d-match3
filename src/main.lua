@@ -49,6 +49,7 @@ function love.load(arg)
   gStateMachine:change('start')
 
   love.keyboard.keysPressed = {}
+  love.mouse.mousePressed = {}
   
   -- Adapt colors to new range in V11 for compatibility
   if V11 then
@@ -77,12 +78,22 @@ function love.update(dt)
   gStateMachine:update(dt)
   
   love.keyboard.keysPressed = {}
+  love.mouse.mousePressed = {}
 end
 
 -- Callback that processes key strokes just once
 -- Does not account for keys being held down
 function love.keypressed(key)
   love.keyboard.keysPressed[key] = true
+end
+
+function love.mousepressed(x, y, button, istouch)
+  x, y = push:toGame(x, y)
+  love.mouse.mousePressed = {
+    x = x,
+    y = y,
+    button = button
+  }
 end
 
 function love.draw()
