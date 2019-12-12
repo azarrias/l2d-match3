@@ -49,7 +49,8 @@ function love.load(arg)
   gStateMachine:change('start')
 
   love.keyboard.keysPressed = {}
-  love.mouse.mousePressed = {}
+  love.mouse.pressed = {}
+  love.mouse.released = {}
   
   -- Adapt colors to new range in V11 for compatibility
   if V11 then
@@ -78,7 +79,8 @@ function love.update(dt)
   gStateMachine:update(dt)
   
   love.keyboard.keysPressed = {}
-  love.mouse.mousePressed = {}
+  love.mouse.pressed = {}
+  love.mouse.released = {}
 end
 
 -- Callback that processes key strokes just once
@@ -89,7 +91,16 @@ end
 
 function love.mousepressed(x, y, button, istouch)
   x, y = push:toGame(x, y)
-  love.mouse.mousePressed = {
+  love.mouse.pressed = {
+    x = x,
+    y = y,
+    button = button
+  }
+end
+
+function love.mousereleased(x, y, button, istouch)
+  x, y = push:toGame(x, y)
+  love.mouse.released = {
     x = x,
     y = y,
     button = button

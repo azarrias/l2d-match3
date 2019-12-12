@@ -69,13 +69,13 @@ function StartState:update(dt)
     end
   end
   
-  if love.mouse.mousePressed then
-    if love.mouse.mousePressed.button == 1 then
-      if love.mouse.mousePressed.x >= startX and love.mouse.mousePressed.x <= startX + startWidth 
-        and love.mouse.mousePressed.y >= startY and love.mouse.mousePressed.y <= startY + startHeight then
+  if love.mouse.pressed then
+    if love.mouse.pressed.button == 1 then
+      if love.mouse.pressed.x >= startX and love.mouse.pressed.x <= startX + startWidth 
+        and love.mouse.pressed.y >= startY and love.mouse.pressed.y <= startY + startHeight then
           self:commandStart()
-      elseif love.mouse.mousePressed.x >= quitX and love.mouse.mousePressed.x <= quitX + quitWidth 
-        and love.mouse.mousePressed.y >= quitY and love.mouse.mousePressed.y <= quitY + quitHeight then
+      elseif love.mouse.pressed.x >= quitX and love.mouse.pressed.x <= quitX + quitWidth 
+        and love.mouse.pressed.y >= quitY and love.mouse.pressed.y <= quitY + quitHeight then
           self:commandQuit()
       end
     end

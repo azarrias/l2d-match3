@@ -100,6 +100,31 @@ function PlayState:update(dt)
       self.boardHighlightX = math.min(7, self.boardHighlightX + 1)
       SOUNDS.select:play()
     end
+    
+    if next(love.mouse.pressed) then
+      local x = math.floor((love.mouse.pressed.x - self.board.x) / 32) + 1
+      local y = math.floor((love.mouse.pressed.y - self.board.y) / 32) + 1
+      
+      if x >= 1 and x <= 8 and y >= 1 and y <= 8 then
+        self.highlightedTile = self.board.tiles[y][x]
+      end
+    end
+  
+    if next(love.mouse.released) then
+      local x = math.floor((love.mouse.released.x - self.board.x) / 32) + 1
+      local y = math.floor((love.mouse.released.y - self.board.y) / 32) + 1
+      
+      if x >= 1 and x <= 8 and y >= 1 and y <= 8 then
+        if self.highlightedTile == self.board.tiles[y][x] then
+          self.highlightedTile = nil
+        elseif math.abs(self.highlightedTile.gridX - x) + math.abs(self.highlightedTile.gridY - y) > 1 then
+          SOUNDS.error:play()
+          self.highlightedTile = nil
+        else
+          self:commandSwapTiles(x, y)
+        end
+      end
+    end
   
     if love.keyboard.keysPressed.enter or love.keyboard.keysPressed['return'] then
       local x, y = self.boardHighlightX + 1, self.boardHighlightY + 1
@@ -116,43 +141,7 @@ function PlayState:update(dt)
         self.highlightedTile = nil
       -- otherwise all is good, swap the tiles
       else
-        local tempX, tempY = self.highlightedTile.gridX, self.highlightedTile.gridY
-        local newTile = self.board.tiles[y][x]
-      
-        self.highlightedTile.gridX, self.highlightedTile.gridY = newTile.gridX, newTile.gridY
-        newTile.gridX, newTile.gridY = tempX, tempY
-      
-        self.board.tiles[self.highlightedTile.gridY][self.highlightedTile.gridX] =
-          self.highlightedTile
-        self.board.tiles[newTile.gridY][newTile.gridX] = newTile
-
-        -- check if the move produces a match
-        local createsMatch = self.board:searchMatches()
-            
-        -- swap tween animation
-        Timer.tween(0.1, {
-          [self.highlightedTile] = { x = newTile.x, y = newTile.y },
-          [newTile] =  { x = self.highlightedTile.x, y = self.highlightedTile.y }
-        })
-        :finish(function()
-          -- if it is a match then handle it, otherwise undo the move
-          if createsMatch then
-            self:handleMatches()
-          else
-            SOUNDS.error:play()
-            Timer.tween(0.1, {
-              [self.highlightedTile] = { x = newTile.x, y = newTile.y },
-              [newTile] =  { x = self.highlightedTile.x, y = self.highlightedTile.y }
-            })
-            :finish(function()
-              newTile.gridX, newTile.gridY = self.highlightedTile.gridX, self.highlightedTile.gridY
-              self.highlightedTile.gridX, self.highlightedTile.gridY = tempX, tempY
-              self.board.tiles[self.highlightedTile.gridY][self.highlightedTile.gridX] = self.highlightedTile
-              self.board.tiles[newTile.gridY][newTile.gridX] = newTile
-              self.highlightedTile = nil
-            end)
-          end
-        end)
+        self:commandSwapTiles(x, y)
       end
     end
   end
@@ -283,4 +272,43 @@ function PlayState:handleMatches()
     self.canInput = true
   end
 end
-  
+
+function PlayState:commandSwapTiles(x, y)
+  local tempX, tempY = self.highlightedTile.gridX, self.highlightedTile.gridY
+  local newTile = self.board.tiles[y][x]
+
+  self.highlightedTile.gridX, self.highlightedTile.gridY = newTile.gridX, newTile.gridY
+  newTile.gridX, newTile.gridY = tempX, tempY
+
+  self.board.tiles[self.highlightedTile.gridY][self.highlightedTile.gridX] =
+    self.highlightedTile
+  self.board.tiles[newTile.gridY][newTile.gridX] = newTile
+
+  -- check if the move produces a match
+  local createsMatch = self.board:searchMatches()
+      
+  -- swap tween animation
+  Timer.tween(0.1, {
+    [self.highlightedTile] = { x = newTile.x, y = newTile.y },
+    [newTile] =  { x = self.highlightedTile.x, y = self.highlightedTile.y }
+  })
+  :finish(function()
+    -- if it is a match then handle it, otherwise undo the move
+    if createsMatch then
+      self:handleMatches()
+    else
+      SOUNDS.error:play()
+      Timer.tween(0.1, {
+        [self.highlightedTile] = { x = newTile.x, y = newTile.y },
+        [newTile] =  { x = self.highlightedTile.x, y = self.highlightedTile.y }
+      })
+      :finish(function()
+        newTile.gridX, newTile.gridY = self.highlightedTile.gridX, self.highlightedTile.gridY
+        self.highlightedTile.gridX, self.highlightedTile.gridY = tempX, tempY
+        self.board.tiles[self.highlightedTile.gridY][self.highlightedTile.gridX] = self.highlightedTile
+        self.board.tiles[newTile.gridY][newTile.gridX] = newTile
+        self.highlightedTile = nil
+      end)
+    end
+  end)
+end
