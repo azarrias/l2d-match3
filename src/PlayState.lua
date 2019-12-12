@@ -101,28 +101,34 @@ function PlayState:update(dt)
       SOUNDS.select:play()
     end
     
-    if next(love.mouse.pressed) then
+    if next(love.mouse.pressed) and love.mouse.pressed.x and love.mouse.pressed.y then
       local x = math.floor((love.mouse.pressed.x - self.board.x) / 32) + 1
       local y = math.floor((love.mouse.pressed.y - self.board.y) / 32) + 1
-      
+    
       if x >= 1 and x <= 8 and y >= 1 and y <= 8 then
         self.highlightedTile = self.board.tiles[y][x]
       end
     end
   
     if next(love.mouse.released) then
-      local x = math.floor((love.mouse.released.x - self.board.x) / 32) + 1
-      local y = math.floor((love.mouse.released.y - self.board.y) / 32) + 1
+      if love.mouse.released.x and love.mouse.released.y then
+        local x = math.floor((love.mouse.released.x - self.board.x) / 32) + 1
+        local y = math.floor((love.mouse.released.y - self.board.y) / 32) + 1
       
-      if x >= 1 and x <= 8 and y >= 1 and y <= 8 then
-        if self.highlightedTile == self.board.tiles[y][x] then
-          self.highlightedTile = nil
-        elseif math.abs(self.highlightedTile.gridX - x) + math.abs(self.highlightedTile.gridY - y) > 1 then
-          SOUNDS.error:play()
-          self.highlightedTile = nil
+        if x >= 1 and x <= 8 and y >= 1 and y <= 8 and self.highlightedTile then
+          if self.highlightedTile == self.board.tiles[y][x] then
+            self.highlightedTile = nil
+          elseif math.abs(self.highlightedTile.gridX - x) + math.abs(self.highlightedTile.gridY - y) > 1 then
+            SOUNDS.error:play()
+            self.highlightedTile = nil
+          else
+            self:commandSwapTiles(x, y)
+          end
         else
-          self:commandSwapTiles(x, y)
+          self.highlightedTile = nil
         end
+      else
+        self.highlightedTile = nil
       end
     end
   
@@ -178,14 +184,16 @@ function PlayState:render()
   end  
 
   -- draw cursor rect
-  if self.rectHighlighted then
-    love.graphics.setColor(COLORS.red_light)
-  else
-    love.graphics.setColor(COLORS.red)
+  if not MOBILE_OS then
+    if self.rectHighlighted then
+      love.graphics.setColor(COLORS.red_light)
+    else
+      love.graphics.setColor(COLORS.red)
+    end
+    love.graphics.setLineWidth(4)
+    love.graphics.rectangle('line', self.boardHighlightX * 32 + (VIRTUAL_WIDTH - 272), 
+      self.boardHighlightY * 32 + 16, 32, 32, 4)
   end
-  love.graphics.setLineWidth(4)
-  love.graphics.rectangle('line', self.boardHighlightX * 32 + (VIRTUAL_WIDTH - 272), 
-    self.boardHighlightY * 32 + 16, 32, 32, 4)
   
   -- GUI text
   love.graphics.setColor(COLORS.gray)

@@ -69,7 +69,7 @@ function StartState:update(dt)
     end
   end
   
-  if love.mouse.pressed then
+  if next(love.mouse.pressed) and love.mouse.pressed.x and love.mouse.pressed.y then
     if love.mouse.pressed.button == 1 then
       if love.mouse.pressed.x >= startX and love.mouse.pressed.x <= startX + startWidth 
         and love.mouse.pressed.y >= startY and love.mouse.pressed.y <= startY + startHeight then

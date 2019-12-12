@@ -1,4 +1,4 @@
-require 'globals'
+require 'Globals'
 push = require 'lib.push'
 Class = require 'lib.class'
 Timer = require 'lib.knife.timer'
