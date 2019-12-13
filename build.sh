@@ -148,7 +148,7 @@ cd target
 tar xf node-linux-x64.tar.xz 1> /dev/null 2>&1
 [[ ":$PATH:" != *":`pwd`/node-"${NV}"-linux-x64/bin:"* ]] && PATH="`pwd`/node-"${NV}"-linux-x64/bin:${PATH}"
 npm install -g love.js
-love.js --title "$P" "${P}".love "$P-web"
+love.js --title "$P" --memory 67108864 "${P}".love "$P-web"
 # test with python -m SimpleHTTPServer 8000
 zip -9 -r - "$P-web" > "${P}-web.zip"
 
