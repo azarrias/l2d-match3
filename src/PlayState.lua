@@ -65,6 +65,9 @@ function PlayState:update(dt)
   if self.timer <= 0 then
     -- clear timers from prior PlayStates
     Timer.clear()
+    
+    SOUNDS['game-over']:play()
+    
     gStateMachine:change('game-over', {
       score = self.score
     })
