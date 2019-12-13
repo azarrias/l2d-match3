@@ -1,0 +1,32 @@
+dist: trusty
+language: generic
+install: true
+
+addons:
+  apt:
+    packages:
+    - lua5.1
+jdk: openjdk8
+
+script: "[[ -n $TRAVIS_TAG ]] && ./build.sh web android || ./build.sh" # web and android only for tags    
+deploy:
+  provider: releases
+  skip_cleanup: true
+  api_key:
+    # travis encrypt <token> 
+    secure: rMRebrdHBsgcU8mFC+2Ey3ees5cHLVQF0gS8uKP2z4GaOQ/Z3luamTM6FJHMhf0ifP40iiW8iNzH/rmU3VZ3mQkTkxptRyGNOLwcNtFqArvfEvIJ6dauR7mbTeuvGr2bnDk3wWeaCABObtY0gTqrkCqHeuaWsJos7/Xhsd9G5JnSW1C4IkJO9IKH6DWNQ9vE04WDSabQjdM1iibdRIi9jE7hUeqS5vtJSOzTMSkchKxTnG+5aqvdbnvUWZoTNAjqfz/cjEqPxMGk80HpFw770stglsRaAxqZ9qDI88DYuWsY8d2g5F31rnU8PC1hxjpYVxI/l4V0i62jiS4+3Q1Gut9zzUit/Eo4Jis4BILIiu9lZitOj3lpJP6zdhNv/H0R5pR+Y4rwQYlhSXU4GStH7MgOq228dJE7+qJxf8uDqxNLHPEP1OgcbJZW20MKuru9ov1hMrYGfneyVf52h9jE8M5upSh2fjgk1nZ+vHhYqHKhxqp4uS3xsMjPOv1YAsEeqOxsJ37HE8akoDa33TjKeu/1EVtMCHCqpLKEIw5PsAhK/WWpmhenRsO+hiL6Q9k+nRJpUCebtYy5PyV5h8pkew0SVcoEgfzIMwij3yVV7VfaAdOs4SXLD/0pID0ebe8xt8UXHRW2aJ4lBwF9QI2FybtTZkcsm5v/sgqUUdtxJOk=
+  file:
+  - target/match3.love
+  - target/match3-win.zip
+  - target/match3-web.zip
+  - target/match3-debug.apk
+  - target/match3-release-unsigned.apk
+  on:
+    tags: true
+    all_branches: true
+after_success:
+- "[[ -n $TRAVIS_TAG ]] && ./build.sh deploy $TRAVIS_REPO_SLUG"
+env:
+  global:
+   # travis encrypt GH_TOKEN=<token>
+  - secure: iP+Js7vXw5CTcCMTELWIUhHZvO5svrB1To62qe9n3DMD29J5pzWbBrmvXSBXxyYApEXhRb7vOagHehn8fMNXFNM25LWJ/dS9sd0Xy9EUpEj7hffVkTPCrAqP9KpZUOJpsAypD0p7g+oFEVlTW7ifH+j+xkLw2TFOoHHdkGVtfBVPqX22pcI9EzU0XEokaB9gbEOfEs0t9g6JB3a46Ji/U0BfjypLqKMcxpNrSbSHGlanH44p6yBk79U6wlGHXZbrzZRPhtKFF1Iujlcpg8YXQ/250MSqIi2dnYoG/IU/VcUgMMYvWzlonPxIInQdwKiekycXJ0m5rX4vhw0VbCQIheLElQV7C4nCLXyKie5jjqEg4/04Z5lfYd4zXgSme9YqYEVvItcLmc/BKIe9wgxxuqeP8huWE8voVzlABy5WcwlPZraETcb76u1Mwi472wikATk2wOB9rGzrx8jn0HNGKF1mG76aMiMv/uDaXQ4K9UfISQuzT+BELH4bcrzkhJJJ3ZRekRCZzcKrxabKsGzOyi7B1k/44ci14zhce5WTdwZb9UrsjWHGCDMTOVtiA89p+pa2wdCHGzgqJOKTJ3gJxjhMwoxiToR6evJ6ePgKw/cWINCfV3pOO7UsRqUXQwHh6C3F0zjL6WpNCyD4il4OrHBFv8bgDpPfNpIO8GFOhPA=
