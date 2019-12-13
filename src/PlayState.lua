@@ -28,6 +28,11 @@ function PlayState:init()
   -- subtract 1 from timer every second
   Timer.every(1, function()
     self.timer = self.timer - 1
+    
+    -- play timer warning sound when time is running out
+    if self.timer <= 5 then
+      SOUNDS['clock']:play()
+    end
   end)
 
   -- board deadlock label out of screen for tween animation
@@ -58,6 +63,7 @@ end
 
 function PlayState:update(dt)
   if love.keyboard.keysPressed.escape then
+    SOUNDS['select']:play()
     gStateMachine:change('start')
   end
   
@@ -79,6 +85,9 @@ function PlayState:update(dt)
       self.canInput = false
       -- clear timers from prior PlayStates
       Timer.clear()
+      
+      SOUNDS['next-level']:play()
+      
       --gStateMachine:change('begin-game', {
       gStateMachine:change('level-clear', {
         --level = self.level + 1,

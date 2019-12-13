@@ -61,6 +61,21 @@ function love.load(arg)
     end
   end
   
+  -- set volume for sounds
+  local masterVolume = 1
+  local sfxVolume = 0.5
+  local musicVolume = 1
+  
+  for k, v in pairs(SOUNDS) do
+    if k == 'music' then
+      SOUNDS['music']:setVolume(masterVolume * musicVolume)
+    elseif k == 'next-level' then
+      SOUNDS['next-level']:setVolume(masterVolume * sfxVolume / 2)
+    else
+      SOUNDS[k]:setVolume(masterVolume * sfxVolume)
+    end
+  end
+  
   -- set music to loop and start
   SOUNDS.music:setLooping(true)
   SOUNDS.music:play()

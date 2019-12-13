@@ -57,7 +57,9 @@ SOUNDS = {
   error = love.audio.newSource('sounds/error.wav', 'static'),
   match = love.audio.newSource('sounds/match.wav', 'static'),
   music = love.audio.newSource('sounds/music3.mp3', 'stream'),
-  ['game-over'] = love.audio.newSource('sounds/game-over.wav', 'static')
+  ['game-over'] = love.audio.newSource('sounds/game-over.wav', 'static'),
+  ['clock'] = love.audio.newSource('sounds/clock.wav', 'static'),
+  ['next-level'] = love.audio.newSource('sounds/next-level.wav', 'static')
 }
 
 function round(num, numDecimalPlaces)
