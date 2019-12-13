@@ -55,7 +55,8 @@ FONTS = {
 SOUNDS = {
   select = love.audio.newSource('sounds/select.wav', 'static'),
   error = love.audio.newSource('sounds/error.wav', 'static'),
-  match = love.audio.newSource('sounds/match.wav', 'static')
+  match = love.audio.newSource('sounds/match.wav', 'static'),
+  music = love.audio.newSource('sounds/music3.mp3', 'stream')
 }
 
 function round(num, numDecimalPlaces)

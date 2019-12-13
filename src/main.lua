@@ -60,6 +60,10 @@ function love.load(arg)
       end
     end
   end
+  
+  -- set music to loop and start
+  SOUNDS.music:setLooping(true)
+  SOUNDS.music:play()
 end
 
 function love.resize(w, h)
