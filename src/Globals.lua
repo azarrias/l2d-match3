@@ -1,6 +1,9 @@
 require 'Util'
 
-MOBILE_OS = love.system.getOS() == 'Android' or love.system.getOS() == 'OS X'
+-- OS checks in order to make necessary adjustments to support multiplatform
+MOBILE_OS = (love._version_major > 0 or love._version_minor >= 9) and (love.system.getOS() == 'Android' or love.system.getOS() == 'OS X')
+WEB_OS = (love._version_major > 0 or love._version_minor >= 9) and love.system.getOS() == 'Web'
+
 GAME_TITLE = 'Match 3'
 WINDOW_WIDTH, WINDOW_HEIGHT = 1280, 720
 VIRTUAL_WIDTH, VIRTUAL_HEIGHT = 512, 288
@@ -56,7 +59,7 @@ SOUNDS = {
   select = love.audio.newSource('sounds/select.wav', 'static'),
   error = love.audio.newSource('sounds/error.wav', 'static'),
   match = love.audio.newSource('sounds/match.wav', 'static'),
-  music = love.audio.newSource('sounds/music3.mp3', 'stream'),
+  music = love.audio.newSource('sounds/music3.mp3', WEB_OS and 'static' or 'stream'),
   ['game-over'] = love.audio.newSource('sounds/game-over.wav', 'static'),
   ['clock'] = love.audio.newSource('sounds/clock.wav', 'static'),
   ['next-level'] = love.audio.newSource('sounds/next-level.wav', 'static')
